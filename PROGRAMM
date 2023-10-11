@@ -1,0 +1,134 @@
+namespace WinFormsApp2
+{
+    public partial class Form1 : Form
+    {
+
+        public int n, m;
+        public int[,] arr;
+
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //получаем размерность матрицы из текстовых полей
+            n = int.Parse(textBox1.Text);
+            m = int.Parse(textBox2.Text);
+            if(n != m)
+            {
+                MessageBox.Show("Введите размеры квадратной матрицы правильно");
+            }
+            else
+            {
+                Random rnd = new Random();
+
+                arr = new int[n, m];// инициализируем массив
+
+                //заполняем массив рандомными числами
+                for (int i = 0; i < n; i++)
+                {
+                    for (int j = 0; j < m; j++)
+                    {
+                        arr[i, j] = rnd.Next(-10, 10);
+                    }
+                }
+                //выводим массив
+                PrintMatrix(arr, richTextBox1);
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            
+            //выводим результаты
+            label4.Text += " " + MultiplyNonNegativeRows(arr).ToString();
+            label5.Text += " " + MaxParallelDiagonalSum(arr).ToString();
+
+
+        }
+        //функция вывода массива
+        private void PrintMatrix(int[,] matrix, RichTextBox textBox)
+        {
+            int rows = matrix.GetLength(0);//кол-во строк
+            int cols = matrix.GetLength(1);//кол-во столбцов
+
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    textBox.Text += $"{matrix[i, j]}   ";//вывод элемента массива в текстовое поле
+                }
+                textBox.Text += "\n";//добавляем перенос на след. строку
+            }
+
+        }
+
+        int MultiplyNonNegativeRows(int[,] matrix)
+        {
+            int product = 1;
+            bool hasNegative;
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                hasNegative = false;
+                for (int j = 0; j < matrix.GetLength(1); j++)
+                {
+                    if (matrix[i, j] < 0)// поиск отрицательного элемента
+                    {
+                        hasNegative = true;
+                        break;
+                    }
+                }
+                //до того как будет найден отрицательный элемент будет отрабатывать if
+                if (!hasNegative)
+                {
+                    for (int j = 0; j < matrix.GetLength(1); j++)
+                    {
+                        product *= matrix[i, j];
+                    }
+                }
+            }
+            return product;// возврещаем результат
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        int MaxParallelDiagonalSum(int[,] matrix)
+        {
+            int maxSum = int.MinValue;//присваивает минимальное значение которое может хранить тип int
+            //считаем макс. сумму по строкам
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                int sum = 0;
+                for (int j = 0; i + j < matrix.GetLength(0); j++)
+                {
+                    sum += matrix[i + j, j];
+                }
+                if (sum > maxSum)
+                {
+                    maxSum = sum;
+                }
+            }
+            //считаем макс. сумму по столбцам
+            for (int j = 1; j < matrix.GetLength(1); j++)
+            {
+                int sum = 0;
+                for (int i = 0; i + j < matrix.GetLength(1); i++)
+                {
+                    sum += matrix[i, i + j];
+                }
+                if (sum > maxSum)
+                {
+                    maxSum = sum;
+                }
+            }
+            return maxSum;//возвращаем результат
+        }
+
+    }
+}
